@@ -4,7 +4,7 @@ An [interceptor](https://docs.nestjs.com/interceptors) for [NestJS](https://nest
 Uses [hot-shots](https://www.npmjs.com/package/hot-shots) and based on [node-connect-datadog](https://github.com/DataDog/node-connect-datadog).
 
 # Installation and Usage
-```
+```bash
 npm i nestjs-statsd-interceptor
 ```
 
@@ -16,7 +16,7 @@ There are 2 options for using this library:
 ## Automatically register a global interceptor
 Import and configure the module, e.g. in your `app` module:
 
-```
+```typescript
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -39,7 +39,7 @@ Import the interceptor class and use it where you want.
 
 One way of doing this is:
 
-```
+```typescript
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -66,7 +66,7 @@ export class AppModule {}
 # Configuration
 Pass an options object to the module's `configure()` method or to the interceptor's constructor:
 
-```
+```typescript
 export interface StatsDInterceptorOptions {
   /**
    * A StatsD client (from hot-shots package). If null then a new client is created with default options
