@@ -71,7 +71,10 @@ export class StatsDInterceptor implements NestInterceptor {
   private readonly responseCode: boolean;
   private readonly DELIM: string;
   private readonly REGEX_PIPE: RegExp;
-  private readonly adapter?: (request: any, response: any) => RequestResponseAdapter;
+  private readonly adapter?: (
+    request: any,
+    response: any,
+  ) => RequestResponseAdapter;
 
   @Optional()
   @Inject(HTTP_ADAPTER_HOST)
@@ -106,15 +109,26 @@ export class StatsDInterceptor implements NestInterceptor {
     if (this.adapter) {
       return this.adapter(request, response);
     }
-    const type = this.httpAdapterHost
-      ? (this.httpAdapterHost.httpAdapter as any).getType()
-      : 'express';
+    const type = this.guessType(request);
     if (type === 'express') {
       return new ExpressAdapter(request, response);
     } else if (type === 'fastify') {
       return new FastifyAdapter(request, response);
     } else {
       throw new Error('Unhandled http adapter type ' + type);
+    }
+  }
+
+  guessType(request: any) {
+    if (this.httpAdapterHost) {
+      const httpAdapter = this.httpAdapterHost.httpAdapter;
+      return (httpAdapter as any).getType();
+    } else {
+      if (request.req) {
+        return 'fastify';
+      } else {
+        return 'express';
+      }
     }
   }
 
