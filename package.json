@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "A NestJS interceptor that reports HTTP metrics using statsd",
   "author": "Doron Tohar",
+  "repository": {
+    "url": "https://github.com/daramasala/nestjs-statsd-interceptor"
+  },
   "scripts": {
     "test": "jest",
     "test:watch": "jest --watch",
@@ -24,7 +27,7 @@
     }
   },
   "engines": {
-    "node": ">= 10.15.1"
+    "node": ">= 10.13.0"
   },
   "peerDependencies": {
     "@nestjs/common": "^6.0.0",
@@ -73,9 +76,6 @@
     "testEnvironment": "node"
   },
   "dependencies": {
-    "@nestjs/common": "^6.5.3",
-    "@nestjs/core": "^6.5.3",
-    "hot-shots": "^6.8.1",
-    "reflect-metadata": "^0.1.13"
+    "hot-shots": "^6.8.1"
   }
 }
