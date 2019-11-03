@@ -10,54 +10,78 @@ import { Observable } from 'rxjs';
 import { StatsD } from 'hot-shots';
 import { HttpArgumentsHost } from '@nestjs/common/interfaces';
 import { tap } from 'rxjs/operators';
-import { Request } from 'express';
 import { HttpAdapterHost } from '@nestjs/core/helpers/http-adapter-host';
 import { ExpressAdapter } from './express-adapter';
 import { RequestResponseAdapter } from './request-response-adapter';
 import { FastifyAdapter } from './fastify-adapter';
 
 export interface StatsDInterceptorOptions {
-  metricClient?: StatsD;
+  /**
+   * A StatsD client (from hot-shots package). If null then a new client is created with default options
+   */
+  statsD?: StatsD;
+  /**
+   * The stat name under which to send the metrics
+   */
   stat?: string;
+  /**
+   * Array of tags to attach to the metric
+   */
   tags?: string[];
-  path?: string | boolean;
-  baseUrl?: string | boolean;
-  method?: string | boolean;
-  protocol?: string | boolean;
-  responseCode?: string | boolean;
+  /**
+   * If true, create metrics for distinct paths
+   */
+  path?: boolean;
+  /**
+   * If true, add the baseUrl to the metric's route
+   */
+  baseUrl?: boolean;
+  /**
+   * If true, create metrics for distinct methods
+   */
+  method?: boolean;
+  /**
+   * If true, create metrics for distinct protocols
+   */
+  protocol?: boolean;
+  /**
+   * If true, create metrics for distinct status codes
+   */
+  responseCode?: boolean;
   delim?: string;
+  /**
+   * An adapter that will be used to extract path, route, etc. from the request-response pair.
+   */
   adapter?: (request: any, response: any) => RequestResponseAdapter;
 }
 
-export const STATSD_INTERCEPTOR_OPTIONS_PROVDER =
-  'STATSD_INTERCEPTOR_OPTIONS_PROVDER';
+export const STATSD_INTERCEPTOR_OPTIONS_PROVIDER =
+  'STATSD_INTERCEPTOR_OPTIONS_PROVIDER';
 const HTTP_ADAPTER_HOST = 'HttpAdapterHost';
-const REFLECTOR = 'Reflector';
 
 @Injectable()
 export class StatsDInterceptor implements NestInterceptor {
   private readonly metricClient: StatsD;
   private readonly stat: string;
   private readonly tags: string[];
-  private readonly path: string | boolean;
-  private readonly baseUrl: string | boolean;
-  private readonly method: string | boolean;
-  private readonly protocol: string | boolean;
-  private readonly responseCode: string | boolean;
+  private readonly path: boolean;
+  private readonly baseUrl: boolean;
+  private readonly method: boolean;
+  private readonly protocol: boolean;
+  private readonly responseCode: boolean;
   private readonly DELIM: string;
   private readonly REGEX_PIPE: RegExp;
-  private readonly adapter: (request: any, response: any) => RequestResponseAdapter;
+  private readonly adapter?: (request: any, response: any) => RequestResponseAdapter;
 
   @Optional()
   @Inject(HTTP_ADAPTER_HOST)
-  protected readonly httpAdapterHost: HttpAdapterHost;
+  protected readonly httpAdapterHost?: HttpAdapterHost;
 
   constructor(
-    @Inject(STATSD_INTERCEPTOR_OPTIONS_PROVDER)
+    @Inject(STATSD_INTERCEPTOR_OPTIONS_PROVIDER)
     options: StatsDInterceptorOptions,
-    @Inject(REFLECTOR) protected readonly reflector: any,
   ) {
-    this.metricClient = options.metricClient || new StatsD();
+    this.metricClient = options.statsD || new StatsD();
     this.stat = options.stat || 'node.express.router';
     this.tags = options.tags || [];
     this.path = options.path || false;
@@ -82,11 +106,12 @@ export class StatsDInterceptor implements NestInterceptor {
     if (this.adapter) {
       return this.adapter(request, response);
     }
-    const httpAdapter = this.httpAdapterHost.httpAdapter;
-    const type = httpAdapter.getType();
+    const type = this.httpAdapterHost
+      ? (this.httpAdapterHost.httpAdapter as any).getType()
+      : 'express';
     if (type === 'express') {
       return new ExpressAdapter(request, response);
-    } else if (httpAdapter.getType() === 'fastify') {
+    } else if (type === 'fastify') {
       return new FastifyAdapter(request, response);
     } else {
       throw new Error('Unhandled http adapter type ' + type);
@@ -161,7 +186,7 @@ export class StatsDInterceptor implements NestInterceptor {
 
   getRoute(adapter: RequestResponseAdapter) {
     const routePath = adapter.route;
-    const normalizedBaseUrl = this.baseUrl !== false ? adapter.baseUrl : '';
+    const normalizedBaseUrl = this.baseUrl ? adapter.baseUrl : '';
     return normalizedBaseUrl + this.replacePipeChar(routePath);
   }
 }

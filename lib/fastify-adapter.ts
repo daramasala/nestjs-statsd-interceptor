@@ -3,7 +3,7 @@ import { RequestResponseAdapter } from './request-response-adapter';
 export class FastifyAdapter implements RequestResponseAdapter {
   constructor(private readonly request: any, private readonly response: any) {}
   get route() {
-    return '';
+    return this.response.context.config.url;
   }
 
   get path() {
