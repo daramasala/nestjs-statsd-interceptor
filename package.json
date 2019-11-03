@@ -1,0 +1,81 @@
+{
+  "name": "nestjs-statsd-interceptor",
+  "version": "1.0.0",
+  "description": "A NestJS interceptor that reports HTTP metrics using statsd",
+  "author": "Doron Tohar",
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:cov": "jest --coverage",
+    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "lint": "tslint -p tsconfig.json -c tslint.json",
+    "build": "rm -rf dist && tsc -p tsconfig.json",
+    "prepublish:npm": "npm run build",
+    "publish:npm": "npm publish --access public",
+    "prepublish:next": "npm run build",
+    "publish:next": "npm publish --access public --tag next",
+    "build:test": "npm build && npm pack"
+  },
+  "husky": {
+    "hooks": {
+      "pre-push": "npm run test && npm run lint",
+      "pre-commit": "lint-staged"
+    }
+  },
+  "engines": {
+    "node": ">= 10.15.1"
+  },
+  "peerDependencies": {
+    "@nestjs/common": "^6.0.0",
+    "@nestjs/core": "^6.0.0",
+    "reflect-metadata": "^0.1.12",
+    "rxjs": "^6.0.0"
+  },
+  "devDependencies": {
+    "@nestjs/common": "6.5.3",
+    "@nestjs/core": "6.5.3",
+    "@nestjs/testing": "6.5.3",
+    "@types/jest": "24.0.17",
+    "@types/node": "11.13.4",
+    "@types/supertest": "2.0.7",
+    "lint-staged": "9.2.1",
+    "jest": "24.8.0",
+    "rxjs": "6.5.2",
+    "prettier": "1.17.0",
+    "supertest": "4.0.2",
+    "ts-jest": "24.0.2",
+    "tslint": "5.16.0",
+    "husky": "3.0.3",
+    "typescript": "3.5.3"
+  },
+  "lint-staged": {
+    "*.ts": [
+      "prettier --write",
+      "git add"
+    ]
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts"
+    ],
+    "rootDir": "test",
+    "testRegex": ".spec.ts$",
+    "transform": {
+      "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "collectCoverageFrom": [
+      "**/*.(t|j)s"
+    ],
+    "coverageDirectory": "../coverage",
+    "testEnvironment": "node"
+  },
+  "dependencies": {
+    "@nestjs/common": "^6.5.3",
+    "@nestjs/core": "^6.5.3",
+    "hot-shots": "^6.8.1",
+    "reflect-metadata": "^0.1.13"
+  }
+}
