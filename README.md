@@ -20,7 +20,7 @@ Import and configure the module, e.g. in your `app` module:
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { StatsDInterceptorModule } from './nestjs-statsd-interceptor/nestjs-statsd-interceptor.module';
+import { StatsDInterceptorModule } from 'nestjs-statsd-interceptor';
 
 @Module({
   imports: [StatsDInterceptorModule.configure()],
@@ -44,7 +44,7 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { APP_INTERCEPTOR } from '@nestjs/core';
-import { StatsDInterceptor } from './nestjs-statsd-interceptor/statsd.interceptor';
+import { StatsDInterceptor } from 'nestjs-statsd-interceptor';
 
 @Module({
   controllers: [AppController],
