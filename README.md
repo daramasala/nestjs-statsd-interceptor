@@ -1,3 +1,16 @@
+# UPDATE - just use [connect-datadog](https://www.npmjs.com/package/connect-datadog)
+After starting to develop this I realized that you can just use connect-datadog as a regular express middleware and it works perfectly:
+```typescript
+import * as connectDatadog from 'connect-datadog';
+
+// Later after creating app:
+  app.use(
+    connectDatadog(),
+  );
+```
+
+So there is no need to use this library.
+
 # NestJS StatsD Interceptor
 An [interceptor](https://docs.nestjs.com/interceptors) for [NestJS](https://nestjs.com/) that reports HTTP statistics to a statsd agent.
 
